@@ -40,5 +40,20 @@ namespace zalohovacManager.Controllers
             return Ok(tranlatedJobs);
         }
 
+
+        [HttpPost]
+        public ActionResult Create([FromBody] BackupJob newJob)
+        {
+            try
+            {
+                _jobService.CreateJob(newJob);
+                return Ok("Job uložen do db");
+            }
+            catch (Exception ex)
+            {
+                //if retention - 400
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
