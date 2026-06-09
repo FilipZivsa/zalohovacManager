@@ -1,4 +1,6 @@
 
+using zalohovacManager.Database;
+
 namespace zalohovacManager
 {
     public class Program
@@ -6,6 +8,13 @@ namespace zalohovacManager
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+
+            builder.Services.AddDbContext<DatabaseContext>();
+
+
+
 
             // Add services to the container.
 
