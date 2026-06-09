@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace zalohovacManager.Models
 {
+    [Table("target")]
     public class targetEntity
     {
         [Key]

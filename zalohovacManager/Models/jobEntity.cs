@@ -16,7 +16,7 @@ namespace zalohovacManager.Models
         public string Timing { get; set; }
 
         [Column("method")]
-        public int Method { get; set; }
+        public string Method { get; set; }
 
         [Column("retention_count")]
         public int RetentionCount { get; set; }

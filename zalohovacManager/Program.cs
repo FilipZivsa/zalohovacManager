@@ -1,5 +1,6 @@
 
 using zalohovacManager.Database;
+using zalohovacManager.Services;
 
 namespace zalohovacManager
 {
@@ -11,7 +12,13 @@ namespace zalohovacManager
 
 
 
+
+
             builder.Services.AddDbContext<DatabaseContext>();
+
+            builder.Services.AddScoped<JobService>();
+
+
 
 
 

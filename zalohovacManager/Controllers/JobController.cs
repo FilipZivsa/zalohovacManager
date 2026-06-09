@@ -1,7 +1,9 @@
 ﻿//using Microsoft.AspNetCore.Components; delall mi probmem s ambiguity - Route existovalo ve dvou "slovnicich" namespaces ruznych
 using Microsoft.AspNetCore.Mvc;
 using zalohovacManager.Database;
+using zalohovacManager.DTOs;
 using zalohovacManager.Models;
+using zalohovacManager.Services;
 
 namespace zalohovacManager.Controllers
 
@@ -11,19 +13,31 @@ namespace zalohovacManager.Controllers
  
     public class JobController : ControllerBase
     {
-        private DatabaseContext _context;
+        //private DatabaseContext _context;
 
-        public JobController(DatabaseContext context)
+        //public JobController(DatabaseContext context)
+        //{
+        //    _context = context;
+        //}
+
+        private JobService _jobService;
+
+        public JobController(JobService jobService)
         {
-            _context = context;
+            _jobService = jobService;
         }
 
 
+
         [HttpGet]
-        public ActionResult<List<jobEntity>> Get()
+        //vraci dto model backupjob
+        public ActionResult<List<BackupJob>> Get()
         {
-            var jobs= _context.Jobs.ToList();
-            return Ok(jobs);
+           // slepi data
+            var tranlatedJobs = _jobService.GetAllJobs();
+
+            //vraci http 200
+            return Ok(tranlatedJobs);
         }
 
     }

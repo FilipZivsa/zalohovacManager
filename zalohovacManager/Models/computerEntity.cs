@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace zalohovacManager.Models
 {
+    [Table("computer")]
     public class computerEntity
     {
         [Key]
