@@ -105,6 +105,43 @@ namespace zalohovacManager.Services
             
             _context.SaveChanges();
         }
+
+
+
+        public void DeleteJob(int id)
+        {
+            // 1. Najdeme úlohu v databázi podle ID
+            var job = _context.Jobs.FirstOrDefault(j => j.ID == id);
+
+            // Pokud se nic nenašlo, vyhodíme chybu
+            if (job == null)
+            {
+                throw new Exception("NOT_FOUND");
+            }
+
+            // 2. Najdeme a smažeme všechny navázané zdroje
+            var zdroje = _context.Sources.Where(s => s.JobID == id).ToList();
+            _context.Sources.RemoveRange(zdroje); // RemoveRange umí smazat celý seznam najednou
+
+            // 3. Najdeme a smažeme všechny navázané cíle
+            var cile = _context.Targets.Where(t => t.JobID == id).ToList();
+            _context.Targets.RemoveRange(cile);
+
+            // 4. Teď, když je čisto, můžeme smazat samotnou hlavní úlohu
+            _context.Jobs.Remove(job);
+
+            // 5. Zápis do MySQL
+            _context.SaveChanges();
+        }
+
+
+
+
+
+
+
+
+
     }
 }
 

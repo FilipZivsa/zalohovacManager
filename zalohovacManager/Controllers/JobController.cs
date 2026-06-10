@@ -55,5 +55,31 @@ namespace zalohovacManager.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                _jobService.DeleteJob(id);
+                return Ok($"Úloha s ID {id} byla úspěšně smazána včetně všech zdrojů a cílů.");
+            }
+            catch (Exception ex)
+            {
+                // Pokud Služba zahlásila naši speciální chybu, vrátíme HTTP 404 Not Found
+                if (ex.Message == "NOT_FOUND")
+                {
+                    return NotFound($"Úloha s ID {id} nebyla v databázi nalezena.");
+                }
+
+                // Pro jakoukoliv jinou chybu vrátíme HTTP 400
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
     }
 }
