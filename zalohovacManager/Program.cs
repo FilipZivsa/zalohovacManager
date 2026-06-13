@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using zalohovacManager.Database;
 using zalohovacManager.Services;
 
@@ -14,7 +15,11 @@ namespace zalohovacManager
 
 
 
-            builder.Services.AddDbContext<DatabaseContext>();
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseLazyLoadingProxies();
+                options.UseMySQL(builder.Configuration.GetConnectionString("MojeSkolniDatabaze"));
+            });
 
             builder.Services.AddScoped<JobService>();
 
