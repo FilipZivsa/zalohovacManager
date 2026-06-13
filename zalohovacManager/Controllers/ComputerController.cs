@@ -64,5 +64,23 @@ namespace zalohovacManager.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+
+
+
+        [HttpPost("{uuid}/assignJob/{jobId}")]
+        public ActionResult AssignJob(Guid uuid, int jobId)
+        {
+            try
+            {
+                _computerService.AssignJobToComputer(uuid, jobId);
+                return Ok($"Úloha ID {jobId} byla úspěšně přiřazena počítači {uuid}.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

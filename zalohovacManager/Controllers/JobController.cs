@@ -41,6 +41,24 @@ namespace zalohovacManager.Controllers
         }
 
 
+
+
+        [HttpGet("byComputer/{uuid}")]
+        public ActionResult<List<BackupJob>> GetByComputer(Guid uuid)
+        {
+            try
+            {
+                var filteredJobs = _jobService.GetJobsByComputer(uuid);
+                return Ok(filteredJobs);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
         [HttpPost]
         public ActionResult Create([FromBody] BackupJob newJob)
         {

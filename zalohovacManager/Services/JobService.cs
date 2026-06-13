@@ -61,6 +61,81 @@ namespace zalohovacManager.Services
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+        public List<BackupJob> GetJobsByComputer(Guid computerUuid)
+        {
+            var resultList = new List<BackupJob>();
+
+            // 1. Podíváme se do tabulky assignment a najdeme ID všech úloh pro toto konkrétní PC
+            var assignedJobIds = _context.Assignments
+                .Where(a => a.ComputerUUID == computerUuid)
+                .Select(a => a.JobID)
+                .ToList();
+
+            // 2. Vytáhneme z databáze jen ty úlohy, které jsme našli v předchozím kroku
+            var jobEntities = _context.Jobs
+                .Where(j => assignedJobIds.Contains(j.ID))
+                .ToList();
+
+            // 3. Zbytek už znáš - stejné "slepení" jako u GetAllJobs
+            foreach (var entity in jobEntities)
+            {
+                var zdroje = _context.Sources
+                    .Where(s => s.JobID == entity.ID)
+                    .Select(s => s.Directory)
+                    .ToList();
+
+                var cile = _context.Targets
+                    .Where(t => t.JobID == entity.ID)
+                    .Select(t => t.Directory)
+                    .ToList();
+
+                var dto = new BackupJob
+                {
+                    Id = entity.ID, // Nezapomeň na to Id, pokud sis ho tam přidal
+                    Timing = entity.Timing,
+                    Method = Enum.Parse<BackupMethod>(entity.Method, true),
+
+                    Retention = new BackupRetention
+                    {
+                        Count = entity.RetentionCount,
+                        Size = entity.RetentionSize
+                    },
+                    Sources = zdroje,
+                    Targets = cile
+                };
+                resultList.Add(dto);
+            }
+            return resultList;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public void CreateJob(BackupJob dto)
         {
             //validace 

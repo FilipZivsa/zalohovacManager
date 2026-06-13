@@ -56,5 +56,42 @@ namespace zalohovacManager.Services
             _context.Computers.Remove(pc);
             _context.SaveChanges();
         }
+
+
+
+
+
+        public void AssignJobToComputer(Guid computerUuid, int jobId)
+        {
+            // 1. Zkontrolujeme, jestli počítač vůbec existuje
+            if (!_context.Computers.Any(c => c.UUID == computerUuid))
+            {
+                throw new Exception("Počítač s tímto UUID neexistuje.");
+            }
+
+            // 2. Zkontrolujeme, jestli existuje ta úloha
+            if (!_context.Jobs.Any(j => j.ID == jobId))
+            {
+                throw new Exception("Úloha s tímto ID neexistuje.");
+            }
+
+            // 3. VALIDACE ZE ZADÁNÍ: Zkontrolujeme, jestli už tohle propojení neexistuje
+            bool alreadyAssigned = _context.Assignments.Any(a => a.ComputerUUID == computerUuid && a.JobID == jobId);
+            if (alreadyAssigned)
+            {
+                throw new Exception("Tato úloha je již k tomuto počítači přiřazena. Duplicity nejsou povoleny.");
+            }
+
+            // 4. Vše je v pořádku, vytvoříme vazbu
+            var newAssignment = new assignmentEntity
+            {
+                ComputerUUID = computerUuid,
+                JobID = jobId,
+                AssignAt = DateTime.Now // Aktuální čas na serveru
+            };
+
+            _context.Assignments.Add(newAssignment);
+            _context.SaveChanges();
+        }
     }
 }
