@@ -21,7 +21,10 @@ namespace zalohovacManager
                 options.UseMySQL(builder.Configuration.GetConnectionString("MojeSkolniDatabaze"));
             });
 
+
+            //aby o sluzbe server vedel
             builder.Services.AddScoped<JobService>();
+            builder.Services.AddScoped<ComputerService>();
 
 
 

@@ -13,7 +13,7 @@ namespace zalohovacManager.Models
 
 
         [Column("computer_uuid")]
-        public string ComputerUUID { get; set; }
+        public Guid ComputerUUID { get; set; }
 
         [Column("job_id")]
         public int JobID { get; set; }

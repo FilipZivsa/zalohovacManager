@@ -11,7 +11,7 @@ namespace zalohovacManager.Database
         public DbSet<jobEntity> Jobs { get; set; }
         public DbSet<sourceEntity> Sources { get; set; }
         public DbSet<targetEntity> Targets { get; set; }
-        public DbSet<computerEntity> Assignments { get; set; }
+        public DbSet<assignmentEntity> Assignments { get; set; }
         public DbSet<computerEntity> Computers { get; set; }
 
       

@@ -9,7 +9,7 @@ namespace zalohovacManager.Models
         [Key]
         [Column("uuid")]
 
-        public string UUID { get; set; }
+        public Guid UUID { get; set; }
 
 
         [Column("name")]
