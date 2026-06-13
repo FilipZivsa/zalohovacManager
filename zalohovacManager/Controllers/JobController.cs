@@ -80,6 +80,29 @@ namespace zalohovacManager.Controllers
         }
 
 
+        [HttpPut("{id}")]
+        public ActionResult Update(int id, [FromBody] BackupJob updatedJob)
+        {
+            try
+            {
+                // Předáme ID a nová data Službě ke zpracování
+                _jobService.UpdateJob(id, updatedJob);
+                return Ok($"Úloha s ID {id} byla úspěšně upravena.");
+            }
+            catch (Exception ex)
+            {
+                // Kontrola naší vlastní chyby pro nenalezený záznam
+                if (ex.Message == "NOT_FOUND")
+                {
+                    return NotFound($"Úloha s ID {id} nebyla v databázi nalezena.");
+                }
+
+                // Chytání validačních a jiných chyb
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
     }
 }

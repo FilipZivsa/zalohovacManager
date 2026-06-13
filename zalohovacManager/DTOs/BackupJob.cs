@@ -10,8 +10,8 @@ namespace zalohovacManager.DTOs
     public class BackupJob
     {
 
+        public int Id { get; set; }
 
-       
         public List<string> Sources { get; set; }
 
       

@@ -41,6 +41,8 @@ namespace zalohovacManager.Services
 
                 var dto = new BackupJob
                 {
+                    Id = entity.ID,
+
                     //mapujeme entity na DTO
                     Timing = entity.Timing,
                     Method = Enum.Parse<BackupMethod>(entity.Method, true),
@@ -110,31 +112,77 @@ namespace zalohovacManager.Services
 
         public void DeleteJob(int id)
         {
-            // 1. Najdeme úlohu v databázi podle ID
+            // 1. Zkontrolujeme, jestli úloha vůbec existuje
+            var jobExists = _context.Jobs.Any(j => j.ID == id);
+
+            // Pokud se nic nenašlo, vyhodíme naši chybu (tu chytí Kontroler a vrátí 404)
+            if (!jobExists)
+            {
+                throw new Exception("NOT_FOUND");
+            }
+
+            // 2. Pošleme do databáze surový SQL příkaz pro smazání. 
+            // Tímto obejdeme zmatený Entity Framework a smažeme to bezpečně napřímo.
+            _context.Database.ExecuteSqlRaw("DELETE FROM source WHERE job_id = {0}", id);
+            _context.Database.ExecuteSqlRaw("DELETE FROM target WHERE job_id = {0}", id);
+
+            // 3. Až po smazání zdrojů a cílů můžeme smazat samotnou úlohu
+            _context.Database.ExecuteSqlRaw("DELETE FROM job WHERE id = {0}", id);
+        }
+
+
+
+        public void UpdateJob(int id, BackupJob dto)
+        {
+            // 1. Najdeme starou úlohu v databázi
             var job = _context.Jobs.FirstOrDefault(j => j.ID == id);
 
-            // Pokud se nic nenašlo, vyhodíme chybu
             if (job == null)
             {
                 throw new Exception("NOT_FOUND");
             }
 
-            // 2. Najdeme a smažeme všechny navázané zdroje
-            var zdroje = _context.Sources.Where(s => s.JobID == id).ToList();
-            _context.Sources.RemoveRange(zdroje); // RemoveRange umí smazat celý seznam najednou
+            // 2. Provedeme validaci (stejnou jako u POSTu)
+            if (dto.Retention.Count < 0 || dto.Retention.Size < 0)
+            {
+                throw new Exception("Počet a velikost retence musí být kladné číslo.");
+            }
 
-            // 3. Najdeme a smažeme všechny navázané cíle
-            var cile = _context.Targets.Where(t => t.JobID == id).ToList();
-            _context.Targets.RemoveRange(cile);
+            // 3. Přepíšeme základní vlastnosti staré úlohy na nové hodnoty z DTO
+            job.Timing = dto.Timing;
+            job.Method = dto.Method.ToString().ToLower();
+            job.RetentionCount = dto.Retention.Count;
+            job.RetentionSize = dto.Retention.Size;
 
-            // 4. Teď, když je čisto, můžeme smazat samotnou hlavní úlohu
-            _context.Jobs.Remove(job);
+            // 4. Bezpečně smažeme staré zdroje a cíle přes RAW SQL (jako u DELETE)
+            _context.Database.ExecuteSqlRaw("DELETE FROM source WHERE job_id = {0}", id);
+            _context.Database.ExecuteSqlRaw("DELETE FROM target WHERE job_id = {0}", id);
 
-            // 5. Zápis do MySQL
+            // 5. Vytvoříme a přidáme NOVÉ zdroje podle toho, co nám přišlo
+            foreach (var sourceDir in dto.Sources)
+            {
+                var newSource = new sourceEntity
+                {
+                    Directory = sourceDir,
+                    JobID = id // Použijeme ID úlohy, kterou právě upravujeme
+                };
+                _context.Sources.Add(newSource);
+            }
+
+            // 6. Vytvoříme a přidáme NOVÉ cíle
+            foreach (var targetDir in dto.Targets)
+            {
+                var newTarget = new targetEntity
+                {
+                    Directory = targetDir,
+                    JobID = id
+                };
+                _context.Targets.Add(newTarget);
+            }
+
+            // 7. Zápis do databáze (Entity Framework pozná, co se změnilo, a pošle UPDATE a INSERT dotazy)
             _context.SaveChanges();
         }
-
-
 
 
 
