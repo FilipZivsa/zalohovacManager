@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using zalohovacManager.Models;
 using zalohovacManager.Services;
 
@@ -16,12 +17,14 @@ namespace zalohovacManager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<List<computerEntity>> Get()
         {
             return Ok(_computerService.GetAllComputers());
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult Create([FromBody] computerEntity newComputer)
         {
             try
@@ -36,6 +39,7 @@ namespace zalohovacManager.Controllers
         }
 
         [HttpPut("{uuid}")]
+        [Authorize]
         public ActionResult Update(Guid uuid, [FromBody] computerEntity updatedComputer)
         {
             try
@@ -51,6 +55,7 @@ namespace zalohovacManager.Controllers
         }
 
         [HttpDelete("{uuid}")]
+        [Authorize]
         public ActionResult Delete(Guid uuid)
         {
             try
@@ -70,6 +75,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpPost("{uuid}/assignJob/{jobId}")]
+        [Authorize]
         public ActionResult AssignJob(Guid uuid, int jobId)
         {
             try

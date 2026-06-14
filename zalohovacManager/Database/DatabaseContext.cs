@@ -13,7 +13,8 @@ namespace zalohovacManager.Database
         public DbSet<targetEntity> Targets { get; set; }
         public DbSet<assignmentEntity> Assignments { get; set; }
         public DbSet<computerEntity> Computers { get; set; }
+        public DbSet<accountEntity> Accounts { get; set; }
 
-      
+
     }
 }

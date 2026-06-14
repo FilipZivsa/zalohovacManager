@@ -1,4 +1,5 @@
 ﻿//using Microsoft.AspNetCore.Components; delall mi probmem s ambiguity - Route existovalo ve dvou "slovnicich" namespaces ruznych
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using zalohovacManager.Database;
 using zalohovacManager.DTOs;
@@ -30,6 +31,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpGet]
+        [Authorize]
         //vraci dto model backupjob
         public ActionResult<List<BackupJob>> Get()
         {
@@ -44,6 +46,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpGet("byComputer/{uuid}")]
+        [AllowAnonymous]
         public ActionResult<List<BackupJob>> GetByComputer(Guid uuid)
         {
             try
@@ -60,6 +63,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public ActionResult Create([FromBody] BackupJob newJob)
         {
             try
@@ -77,6 +81,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult Delete(int id)
         {
             try
@@ -99,6 +104,7 @@ namespace zalohovacManager.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult Update(int id, [FromBody] BackupJob updatedJob)
         {
             try
